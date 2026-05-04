@@ -1,0 +1,3066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Culinary Business Assessment Tool — Pando Consulting Group</title>
+<link href="https://fonts.cdnfonts.com/css/gilroy-bold" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  /* Brand */
+  --brand-primary: #0f4c4c;
+  --brand-primary-dark: #0a3838;
+  --brand-accent: #14b8a6;
+  --brand-accent-soft: #ccfbf1;
+
+  /* Surfaces */
+  --bg: #f8fafc;
+  --bg-elevated: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --card: #ffffff;
+  --card-hover: #f8fafc;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-on-brand: #ffffff;
+
+  /* Borders */
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  /* Score palette — IMMUTABLE */
+  --score-1: #ef4444;
+  --score-2: #f97316;
+  --score-3: #f59e0b;
+  --score-4: #84cc16;
+  --score-5: #22c55e;
+
+  --score-1-bg: #fef2f2;
+  --score-2-bg: #fff7ed;
+  --score-3-bg: #fffbeb;
+  --score-4-bg: #f7fee7;
+  --score-5-bg: #f0fdf4;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
+
+  /* Layout */
+  --header-h: 72px;
+  --sidebar-w: 268px;
+  --content-max: 880px;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: 'Gilroy-Regular', 'Gilroy', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* ============ HEADER ============ */
+header.app-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: var(--sidebar-w);
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-on-brand);
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+.brand-meta { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-name { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.2px; }
+.brand-sub { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+.header-progress {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 420px;
+}
+
+.progress-track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-subtle);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand-accent) 0%, var(--brand-primary) 100%);
+  border-radius: 999px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0%;
+}
+
+.progress-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  min-width: 96px;
+  text-align: right;
+  letter-spacing: 0.3px;
+}
+
+.overall-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 6px;
+  border-radius: 999px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+}
+
+.overall-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: white;
+  background: var(--text-muted);
+}
+
+.overall-meta { display: flex; flex-direction: column; line-height: 1.1; }
+.overall-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; font-weight: 700; }
+.overall-rating { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+
+.header-actions { display: flex; gap: 8px; }
+
+.btn {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+}
+.btn-primary:hover { background: var(--brand-primary-dark); }
+
+.btn-secondary {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+.btn-secondary:hover { background: var(--bg-subtle); border-color: var(--border-strong); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover { background: var(--bg-subtle); color: var(--text-primary); }
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* ============ SIDEBAR ============ */
+aside.sidebar {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  width: var(--sidebar-w);
+  bottom: 0;
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 20px 14px;
+}
+
+.sidebar-heading {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  font-weight: 700;
+  padding: 0 12px 10px;
+  margin-bottom: 4px;
+}
+
+.section-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: left;
+  transition: all 0.12s ease;
+  margin-bottom: 2px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.section-link:hover { background: var(--bg-subtle); color: var(--text-primary); }
+.section-link.active { background: var(--brand-accent-soft); color: var(--brand-primary); font-weight: 700; }
+
+.section-link-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.section-link.active .section-link-num {
+  background: var(--brand-primary);
+  color: white;
+}
+
+.section-link-title { flex: 1; }
+
+.section-link-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.section-link-status.partial { background: var(--score-3); }
+.section-link-status.complete { background: var(--score-5); }
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 8px;
+}
+
+.summary-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: left;
+  transition: all 0.12s ease;
+}
+.summary-link:hover { background: var(--bg-subtle); color: var(--text-primary); }
+.summary-link.active { background: var(--brand-accent-soft); color: var(--brand-primary); }
+
+/* ============ MAIN ============ */
+main.app-main {
+  margin-left: var(--sidebar-w);
+  margin-top: var(--header-h);
+  padding: 40px 48px 80px;
+  min-height: calc(100vh - var(--header-h));
+}
+
+.content-wrap { max-width: var(--content-max); margin: 0 auto; }
+
+.section-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--brand-accent);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-family: 'Gilroy-Bold', 'Gilroy', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.section-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.section-meta {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 18px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 28px;
+}
+
+.meta-item { display: flex; flex-direction: column; gap: 2px; }
+.meta-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; font-weight: 700; }
+.meta-value { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+
+.section-score-mini {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mini-score-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  color: white;
+  background: var(--text-muted);
+}
+
+/* ============ QUESTION CARD ============ */
+.q-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s ease;
+}
+
+.q-card:hover { box-shadow: var(--shadow-md); }
+
+.q-header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+
+.q-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.q-card.answered .q-num {
+  background: var(--brand-primary);
+  color: white;
+}
+
+.q-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.45;
+  flex: 1;
+  padding-top: 3px;
+}
+
+.options { display: flex; flex-direction: column; gap: 8px; }
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.12s ease;
+  background: var(--bg-elevated);
+  text-align: left;
+  width: 100%;
+}
+
+.option:hover {
+  border-color: var(--border-strong);
+  background: var(--card-hover);
+}
+
+.option.selected {
+  border-color: var(--brand-primary);
+  background: var(--brand-accent-soft);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
+}
+
+.opt-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  flex-shrink: 0;
+  position: relative;
+  margin-top: 1px;
+  transition: all 0.12s ease;
+}
+
+.option.selected .opt-radio {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+}
+
+.option.selected .opt-radio::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: white;
+  border-radius: 50%;
+}
+
+.opt-content { flex: 1; }
+
+.opt-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.opt-score.s1 { background: var(--score-1-bg); color: var(--score-1); }
+.opt-score.s2 { background: var(--score-2-bg); color: var(--score-2); }
+.opt-score.s3 { background: var(--score-3-bg); color: var(--score-3); }
+.opt-score.s4 { background: var(--score-4-bg); color: var(--score-4); }
+.opt-score.s5 { background: var(--score-5-bg); color: var(--score-5); }
+
+.opt-text {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.option.selected .opt-text { font-weight: 600; }
+
+.q-notes {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.q-notes-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.q-notes-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 56px;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.q-notes-input:focus {
+  outline: none;
+  border-color: var(--brand-accent);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
+}
+
+/* ============ NAV BUTTONS ============ */
+.section-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 32px;
+  gap: 12px;
+}
+
+.nav-btn {
+  flex: 1;
+  max-width: 220px;
+  height: 56px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.15s ease;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: var(--bg-subtle);
+  border-color: var(--border-strong);
+}
+
+.nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.nav-btn.next {
+  background: var(--brand-primary);
+  color: white;
+  border-color: var(--brand-primary);
+}
+.nav-btn.next:hover:not(:disabled) { background: var(--brand-primary-dark); }
+
+/* ============ SUMMARY VIEW ============ */
+.summary-hero {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+  border-radius: var(--radius-lg);
+  padding: 36px 40px;
+  color: white;
+  margin-bottom: 28px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: center;
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.hero-title {
+  font-family: 'Gilroy-Bold', 'Gilroy', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.hero-sub {
+  font-size: 14px;
+  opacity: 0.85;
+  line-height: 1.5;
+  max-width: 460px;
+}
+
+.hero-score {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-score-num {
+  font-family: 'Gilroy-Bold', 'Gilroy', sans-serif;
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.hero-score-rating {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  color: white;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.score-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.score-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.score-card-num {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.score-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.score-card-info { flex: 1; }
+
+.score-card-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-subtle);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.score-card-fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
+
+.score-card-score {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.score-card-num-big {
+  font-family: 'Gilroy-Bold', 'Gilroy', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.score-card-rating {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: white;
+}
+
+.score-card.unscored .score-card-num-big { color: var(--text-muted); }
+.score-card.unscored .score-card-rating { background: var(--text-muted); }
+
+.highlights-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.highlight-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+}
+
+.highlight-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.highlight-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: white;
+}
+
+.highlight-icon.strengths { background: var(--score-5); }
+.highlight-icon.gaps { background: var(--score-1); }
+
+.highlight-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.highlight-list { display: flex; flex-direction: column; gap: 10px; }
+
+.highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.highlight-item-name { flex: 1; font-weight: 600; color: var(--text-primary); }
+
+.highlight-item-score {
+  font-weight: 800;
+  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: white;
+}
+
+.highlight-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 8px 0;
+}
+
+/* ============ MODAL ============ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.modal-backdrop.open { display: flex; }
+
+.modal {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  max-width: 520px;
+  width: 100%;
+  padding: 32px;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-title {
+  font-family: 'Gilroy-Bold', 'Gilroy', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  letter-spacing: -0.3px;
+}
+
+.modal-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.modal-warn {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #92400e;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.modal-warn-icon { font-size: 18px; flex-shrink: 0; }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* Score helper classes */
+.bg-s1 { background: var(--score-1); }
+.bg-s2 { background: var(--score-2); }
+.bg-s3 { background: var(--score-3); }
+.bg-s4 { background: var(--score-4); }
+.bg-s5 { background: var(--score-5); }
+
+/* Hidden state */
+.hidden { display: none !important; }
+
+/* Scrollbar styling */
+aside.sidebar::-webkit-scrollbar { width: 6px; }
+aside.sidebar::-webkit-scrollbar-track { background: transparent; }
+aside.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+aside.sidebar::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  :root { --sidebar-w: 240px; }
+  main.app-main { padding: 32px 32px 64px; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .highlights-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .brand-meta { display: none; }
+  .header-progress { display: none; }
+  .overall-meta { display: none; }
+  .btn { padding: 0 12px; }
+  .summary-hero { grid-template-columns: 1fr; padding: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-mark">P</div>
+    <div class="brand-meta">
+      <div class="brand-name">Pando Consulting Group</div>
+      <div class="brand-sub">Operational Readiness</div>
+    </div>
+  </div>
+
+  <div class="header-progress">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">0 of 0 answered</div>
+  </div>
+
+  <div class="overall-badge">
+    <div class="overall-circle" id="overallCircle">—</div>
+    <div class="overall-meta">
+      <div class="overall-label">Overall</div>
+      <div class="overall-rating" id="overallRating">Not started</div>
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <button class="btn btn-secondary" onclick="goToSummary()">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12h18M3 6h18M3 18h12"/></svg>
+      Summary
+    </button>
+    <button class="btn btn-primary" onclick="openPdfModal()">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Download PDF
+    </button>
+    <button class="btn btn-ghost" onclick="resetAssessment()" title="Reset all answers">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-heading">Sections</div>
+  <div id="sectionLinks"></div>
+  <div class="sidebar-divider"></div>
+  <button class="summary-link" id="summaryLink" onclick="goToSummary()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Summary Dashboard
+  </button>
+</aside>
+
+<!-- MAIN -->
+<main class="app-main">
+  <div class="content-wrap">
+    <!-- Section view -->
+    <div id="sectionView"></div>
+    <!-- Summary view -->
+    <div id="summaryView" class="hidden"></div>
+  </div>
+</main>
+
+<!-- PDF MODAL -->
+<div class="modal-backdrop" id="pdfModal">
+  <div class="modal">
+    <div class="modal-title">Download PDF Report</div>
+    <div class="modal-text">Generate a professional PDF report with section-by-section analysis, scoring breakdown, and key highlights — formatted in the Pando Consulting Group house style.</div>
+    <div id="pdfWarn" class="modal-warn hidden">
+      <span class="modal-warn-icon">⚠</span>
+      <div><strong>Assessment is incomplete.</strong> The report will only include sections with at least one answered question. Completing all sections produces the most reliable analysis.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closePdfModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="generatePDF()">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Generate Report
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===========================================================================
+// SECTIONS DATA
+// ===========================================================================
+const SECTIONS = [
+  {
+    id: "sales-revenue-mix",
+    title: "Sales / Revenue Mix",
+    description: "Understand how revenue is generated, tracked, and forecasted across all business lines.",
+    questions: [
+      {
+        id: "q1",
+        label: "What percentage of revenue comes from classes, private events, catering, dinners, retreats, and gift certificates?",
+        options: [
+          "Revenue is not tracked by category",
+          "Rough estimates exist but no formal breakdown",
+          "Revenue is tracked by major category monthly or quarterly",
+          "Revenue tracked by category with detailed reporting and trends",
+          "Detailed revenue mix analysis with seasonality and forecasts"
+        ]
+      },
+      {
+        id: "q2",
+        label: "Which revenue streams generate the highest contribution margin?",
+        options: [
+          "Contribution margin by stream is not calculated",
+          "General sense exists but no formal margin analysis",
+          "Margin is known by major category",
+          "Contribution margin tracked in detail by revenue stream",
+          "Mix is actively optimized using detailed margin analysis"
+        ]
+      },
+      {
+        id: "q3",
+        label: "How far in advance is revenue booked (30 / 60 / 90 days visibility)?",
+        options: [
+          "Less than 30 days visibility; mostly walk-in or last-minute",
+          "30 days visibility on most bookings",
+          "60 days of consistent forward visibility",
+          "90 days of visibility with reliable forward pipeline",
+          "90+ days with strong recurring or contracted revenue"
+        ]
+      },
+      {
+        id: "q4",
+        label: "What percentage of revenue comes from repeat vs. new customers?",
+        options: [
+          "Repeat vs. new customer split is not tracked",
+          "Estimates exist but no underlying data",
+          "Repeat rate is tracked with basic metrics",
+          "Repeat and new are segmented with cohort analysis",
+          "Strong repeat base with detailed cohort tracking and lifecycle metrics"
+        ]
+      },
+      {
+        id: "q5",
+        label: "Is pricing standardized or customized per engagement?",
+        options: [
+          "Pricing is set ad-hoc per engagement, largely by feel",
+          "Pricing varies widely with minimal structure",
+          "Standardized base prices with case-by-case adjustments",
+          "Documented pricing with clear rationale for variances",
+          "Disciplined pricing with margin protection and regular reviews"
+        ]
+      }
+    ]
+  },
+  {
+    id: "marketing-demand",
+    title: "Marketing / Demand Generation",
+    description: "Evaluate how the business attracts customers and the durability of its demand engine.",
+    questions: [
+      {
+        id: "q1",
+        label: "What are the primary customer acquisition channels?",
+        options: [
+          "Customer source is unknown",
+          "General sense of channels but no tracking",
+          "Top 2–3 channels are known and roughly understood",
+          "All channels are tracked with attribution",
+          "CAC and LTV tracked by channel with full attribution model"
+        ]
+      },
+      {
+        id: "q2",
+        label: "How large and active is the email list, and what percentage of bookings come from it?",
+        options: [
+          "No email list, or list is rarely used",
+          "Small list, infrequent sends, no measurement",
+          "Active list with regular sends and basic engagement tracking",
+          "Segmented list driving measurable bookings",
+          "Large engaged list driving 30%+ of bookings with full analytics"
+        ]
+      },
+      {
+        id: "q3",
+        label: "Which offerings consistently sell out vs. require promotion or discounting?",
+        options: [
+          "Sell-out vs. underperformance is unpredictable",
+          "Hits and misses are felt but not analyzed",
+          "Patterns of sell-outs and slow movers are known",
+          "Fill rates are tracked and the schedule is adjusted",
+          "Calendar is optimized around demand data; discounting is rare"
+        ]
+      },
+      {
+        id: "q4",
+        label: "How dependent is demand on brand, instructors, or founder presence?",
+        options: [
+          "Demand collapses without founder involvement",
+          "Heavily founder or key-person dependent",
+          "Mix of founder draw and brand draw",
+          "Brand-driven with named instructors as secondary draws",
+          "Brand fully institutionalized with multiple instructors carrying equal weight"
+        ]
+      },
+      {
+        id: "q5",
+        label: "Do you track ROI by marketing channel?",
+        options: [
+          "No ROI tracking exists",
+          "Anecdotal sense of what works",
+          "Basic spend tracking by channel",
+          "ROI tracked monthly by channel",
+          "Full attribution model with data-driven budget allocation"
+        ]
+      }
+    ]
+  },
+  {
+    id: "customer-analysis",
+    title: "Customer Analysis",
+    description: "Define and measure customer segments, behaviors, and satisfaction.",
+    questions: [
+      {
+        id: "q1",
+        label: "Who is the core customer (consumer, corporate, tourist, etc.)?",
+        options: [
+          "Customer base is unclear; we take whoever comes",
+          "Mixed customer base with no formal definition",
+          "Core customer profile is defined",
+          "Documented personas backed by data",
+          "Detailed segmentation with strategies for each segment"
+        ]
+      },
+      {
+        id: "q2",
+        label: "What is the repeat purchase rate over 12 months?",
+        options: [
+          "Repeat rate is unknown",
+          "Estimated but not measured",
+          "Measured at the company level",
+          "Measured by segment and offering",
+          "Tracked with cohort analysis and lifecycle metrics"
+        ]
+      },
+      {
+        id: "q3",
+        label: "Do you segment customers by spend, frequency, and event type?",
+        options: [
+          "No customer segmentation exists",
+          "Informal segmentation",
+          "Basic segmentation in place",
+          "Multi-dimensional segmentation with reporting",
+          "Advanced segmentation drives marketing and pricing decisions"
+        ]
+      },
+      {
+        id: "q4",
+        label: "What are the primary reasons customers choose this business?",
+        options: [
+          "Reasons customers choose us are unclear",
+          "Hypotheses exist but no supporting data",
+          "Customer feedback is collected occasionally",
+          "Regular customer surveys with documented reasons",
+          "NPS, feedback loops, and reasons documented and acted on"
+        ]
+      },
+      {
+        id: "q5",
+        label: "How are satisfaction, reviews, and complaints tracked?",
+        options: [
+          "Not tracked",
+          "Reviewed informally with no system",
+          "Reviews monitored on platforms",
+          "Centralized tracking with response process",
+          "Active reputation management with response SLAs and trend analysis"
+        ]
+      }
+    ]
+  },
+  {
+    id: "operations",
+    title: "Operations",
+    description: "Assess the operational backbone supporting classes, catering, dinners, and retreats.",
+    questions: [
+      {
+        id: "q1",
+        label: "Are SOPs documented for classes, catering, dinners, and retreats?",
+        options: [
+          "No SOPs; operations rely on tribal knowledge",
+          "Some informal notes exist; mostly verbal",
+          "Basic SOPs documented for major categories",
+          "Full SOPs for all categories, regularly updated",
+          "Comprehensive SOP library used in training and reviewed annually"
+        ]
+      },
+      {
+        id: "q2",
+        label: "How are food costs, waste, and vendor purchasing managed?",
+        options: [
+          "Not tracked; we order what we need",
+          "Total food spend tracked monthly only",
+          "Food cost percentage tracked at the company level",
+          "Food cost tracked by event type with waste monitored",
+          "Detailed cost controls with waste targets and vendor optimization"
+        ]
+      },
+      {
+        id: "q3",
+        label: "What is current kitchen and staffing capacity?",
+        options: [
+          "Capacity is unknown; figured out per job",
+          "Rough sense of capacity exists",
+          "Capacity for typical operations is documented",
+          "Capacity model used for booking decisions",
+          "Real-time capacity tracking informs bookings and growth planning"
+        ]
+      },
+      {
+        id: "q4",
+        label: "How are catering jobs scoped, executed, and reviewed?",
+        options: [
+          "Custom each time with no process",
+          "Standard quoting; execution varies",
+          "Standard scoping and execution checklists in place",
+          "Full process: scope, execute, post-mortem",
+          "Continuous improvement loop with metrics by job"
+        ]
+      },
+      {
+        id: "q5",
+        label: "What are the biggest operational bottlenecks?",
+        options: [
+          "Bottlenecks are unknown or unaddressed",
+          "Bottlenecks felt but not documented",
+          "Bottlenecks identified with ad-hoc fixes",
+          "Bottlenecks documented with resolution plans",
+          "Bottlenecks systematically resolved through continuous improvement"
+        ]
+      }
+    ]
+  },
+  {
+    id: "catering-private-events",
+    title: "Catering / Private Events",
+    description: "Examine the structure, profitability, and repeatability of catering and private event work.",
+    questions: [
+      {
+        id: "q1",
+        label: "What is the revenue split between corporate vs. social events?",
+        options: [
+          "Split is not tracked",
+          "Estimated but not formally measured",
+          "Tracked by category",
+          "Tracked with detailed reporting",
+          "Segmented with separate sales and marketing approach for each"
+        ]
+      },
+      {
+        id: "q2",
+        label: "Are proposals standardized (pricing, staffing, deposits, terms)?",
+        options: [
+          "Custom proposal each time",
+          "Some templates exist with significant variation",
+          "Standard template with customizable fields",
+          "Standardized proposals with documented terms",
+          "CRM-driven proposals with approval workflow and version control"
+        ]
+      },
+      {
+        id: "q3",
+        label: "How often do actual costs exceed estimates?",
+        options: [
+          "Frequently; estimates are essentially a guess",
+          "Often, but variances are not tracked precisely",
+          "Occasionally; variances are tracked",
+          "Rarely; tight cost controls in place",
+          "Costs vs. estimates tracked per job with under 5% variance"
+        ]
+      },
+      {
+        id: "q4",
+        label: "How are logistics (transportation, rentals, staffing) managed?",
+        options: [
+          "Last-minute scramble per event",
+          "Done by founder or key person from memory",
+          "Documented checklists exist",
+          "Full logistics SOP with vendor list",
+          "Logistics platform or system with end-to-end tracking"
+        ]
+      },
+      {
+        id: "q5",
+        label: "What is the repeat booking rate?",
+        options: [
+          "Repeat rate is unknown",
+          "Estimated low repeat rate",
+          "Some repeat clients tracked informally",
+          "Tracked rate with retention strategies",
+          "Strong repeat rate (40%+) with formal account management"
+        ]
+      }
+    ]
+  },
+  {
+    id: "retreats-offsite",
+    title: "Retreats / Off-Site Programming",
+    description: "Evaluate the economics, scalability, and risk profile of retreat and off-site work.",
+    questions: [
+      {
+        id: "q1",
+        label: "How are retreat partners selected and contracted?",
+        options: [
+          "Ad-hoc; founder-driven relationships",
+          "Loose process with informal contracts",
+          "Documented selection criteria with standard contracts",
+          "Vetted partner network with formal agreements",
+          "Strategic partner portfolio with performance reviews"
+        ]
+      },
+      {
+        id: "q2",
+        label: "What are the full economics after all costs?",
+        options: [
+          "It is unclear whether retreats are profitable",
+          "Top-line is tracked; full P&L is unclear",
+          "Net margin is tracked per retreat",
+          "Detailed P&L with cost allocations",
+          "Full unit economics with margin targets"
+        ]
+      },
+      {
+        id: "q3",
+        label: "Are retreats scalable or relationship-dependent?",
+        options: [
+          "Entirely founder-relationship dependent",
+          "Mostly relationship-driven",
+          "Mix of relationship and brand pull",
+          "Process-driven with brand pull",
+          "Scalable program with minimal founder dependency"
+        ]
+      },
+      {
+        id: "q4",
+        label: "What are the cancellation and risk protections?",
+        options: [
+          "No protections; the business absorbs the loss",
+          "Verbal terms with weak protection",
+          "Standard cancellation terms in contracts",
+          "Strong terms plus deposits and insurance",
+          "Comprehensive risk framework: deposits, insurance, force majeure"
+        ]
+      },
+      {
+        id: "q5",
+        label: "How much management time is required per retreat?",
+        options: [
+          "Founder is fully dedicated for weeks",
+          "Heavy founder time required",
+          "Manageable founder involvement",
+          "Mostly delegated; founder oversight only",
+          "Fully delegated to team; founder optional"
+        ]
+      }
+    ]
+  },
+  {
+    id: "governance-legal-risk",
+    title: "Governance / Legal / Risk",
+    description: "Confirm the legal, contractual, and compliance foundations of the business.",
+    questions: [
+      {
+        id: "q1",
+        label: "Are all contracts, permits, and agreements current and centralized?",
+        options: [
+          "Scattered; some are missing or expired",
+          "Most are current but not centralized",
+          "Centralized with renewals tracked",
+          "Centralized with legal review process",
+          "Cloud-based document management with full audit trail"
+        ]
+      },
+      {
+        id: "q2",
+        label: "Are workers properly classified (employees vs. contractors)?",
+        options: [
+          "Classification is unclear or mixed",
+          "Some classification risk exists",
+          "Generally compliant with informal review",
+          "Documented classification with legal review",
+          "Routinely audited and fully compliant"
+        ]
+      },
+      {
+        id: "q3",
+        label: "Have there been past claims, disputes, or compliance issues?",
+        options: [
+          "Multiple unresolved issues",
+          "Past issues that are not fully resolved",
+          "Past issues, all resolved",
+          "Clean record with some informal complaints",
+          "Clean record with proactive risk management"
+        ]
+      },
+      {
+        id: "q4",
+        label: "Does the company own all brand and operational assets?",
+        options: [
+          "Major assets owned by individuals",
+          "Mixed ownership with some gaps",
+          "Most assets owned by the company; some gaps",
+          "All major assets owned by the company",
+          "Fully documented IP and asset register with assignments confirmed"
+        ]
+      },
+      {
+        id: "q5",
+        label: "Are there any lease, zoning, or licensing risks?",
+        options: [
+          "Significant risks are unaddressed",
+          "Some risks not formally managed",
+          "Risks identified with basic mitigation",
+          "Risks managed with documented plans",
+          "Comprehensive compliance framework; no material risks"
+        ]
+      }
+    ]
+  },
+  {
+    id: "human-resources",
+    title: "Human Resources / Management",
+    description: "Assess key personnel, role documentation, and the resilience of the team.",
+    questions: [
+      {
+        id: "q1",
+        label: "Who are the key personnel critical to operations?",
+        options: [
+          "Multiple single-points-of-failure exist and are undocumented",
+          "Key personnel are known but not documented",
+          "Documented but no succession plans",
+          "Documented with cross-training",
+          "Documented with succession plans and depth charts"
+        ]
+      },
+      {
+        id: "q2",
+        label: "Are roles documented and replaceable?",
+        options: [
+          "No role documentation",
+          "Informal role descriptions",
+          "Job descriptions exist for major roles",
+          "Detailed JDs with cross-training",
+          "Full role documentation with succession plans"
+        ]
+      },
+      {
+        id: "q3",
+        label: "How are instructors recruited, trained, and retained?",
+        options: [
+          "Ad-hoc recruitment with no formal training",
+          "Network-based recruitment with informal training",
+          "Defined recruitment and onboarding",
+          "Formal training program with retention efforts",
+          "Robust talent pipeline with development paths"
+        ]
+      },
+      {
+        id: "q4",
+        label: "Are compensation structures standardized?",
+        options: [
+          "Compensation set per individual with no structure",
+          "Some structure with many exceptions",
+          "Documented bands by role",
+          "Standardized comp with annual review",
+          "Market-benchmarked comp tied to performance management"
+        ]
+      },
+      {
+        id: "q5",
+        label: "What happens if leadership is absent for 60 days?",
+        options: [
+          "Business would seriously suffer",
+          "Significant disruption likely",
+          "Manageable with effort",
+          "Operations continue with minor adjustments",
+          "Operations run smoothly with delegated authority"
+        ]
+      }
+    ]
+  },
+  {
+    id: "tech-stack-data",
+    title: "Tech Stack / Data",
+    description: "Evaluate the systems, integration, and data quality powering the business.",
+    questions: [
+      {
+        id: "q1",
+        label: "What systems are used for bookings, CRM, accounting, and scheduling?",
+        options: [
+          "Mostly manual processes and spreadsheets",
+          "Mix of disconnected tools",
+          "Core systems are in place but not integrated",
+          "Integrated core stack",
+          "Full stack integration with a data warehouse"
+        ]
+      },
+      {
+        id: "q2",
+        label: "Can profitability be tracked by event type?",
+        options: [
+          "Only top-line P&L is available",
+          "Estimated but not measured",
+          "Tracked at category level",
+          "Tracked at the event level",
+          "Real-time profitability dashboards by event"
+        ]
+      },
+      {
+        id: "q3",
+        label: "Is customer data clean and usable for analysis?",
+        options: [
+          "Data is messy and incomplete",
+          "Data exists with significant gaps",
+          "Generally clean; periodic cleanup",
+          "Clean data with governance",
+          "Data warehouse with high-quality, analyzable data"
+        ]
+      },
+      {
+        id: "q4",
+        label: "Are SOPs, recipes, and documents centralized?",
+        options: [
+          "Scattered across email, drives, and paper",
+          "Mostly in one place but disorganized",
+          "Centralized in a shared drive",
+          "Centralized with version control",
+          "Knowledge management system with search and tagging"
+        ]
+      },
+      {
+        id: "q5",
+        label: "What manual processes create inefficiencies or risk?",
+        options: [
+          "Many manual processes; not addressed",
+          "Manual processes known but unaddressed",
+          "Major manual processes identified",
+          "Automation roadmap in place",
+          "Most processes automated; continuous improvement program"
+        ]
+      }
+    ]
+  },
+  {
+    id: "owner-reliance",
+    title: "Owner Reliance / Transferability",
+    description: "Measure how dependent the business is on the current owner and how transferable it is.",
+    questions: [
+      {
+        id: "q1",
+        label: "Which relationships are tied directly to the owner?",
+        options: [
+          "Most key relationships are owner-only",
+          "Many relationships are owner-dependent",
+          "Mix of owner and team relationships",
+          "Most relationships are institutionalized",
+          "Fully institutionalized; owner not required"
+        ]
+      },
+      {
+        id: "q2",
+        label: "What decisions require owner involvement?",
+        options: [
+          "Owner is involved in nearly every decision",
+          "Owner makes most major decisions",
+          "Owner makes strategic decisions",
+          "Owner reviews major decisions only",
+          "Clear delegation; owner sets strategy only"
+        ]
+      },
+      {
+        id: "q3",
+        label: "Can the business operate under a general manager?",
+        options: [
+          "Not currently possible",
+          "Possible with a significant transition",
+          "Possible with some adjustments",
+          "Yes, with a current GM model",
+          "Yes — already operating GM-led"
+        ]
+      },
+      {
+        id: "q4",
+        label: "Is the brand personality-driven or institutionalized?",
+        options: [
+          "Built entirely on the owner's persona",
+          "Heavily owner-personality driven",
+          "Mix of owner and brand",
+          "Mostly institutionalized",
+          "Fully institutionalized brand independent of owner"
+        ]
+      },
+      {
+        id: "q5",
+        label: "What would a buyer need in the first 90 days?",
+        options: [
+          "Extensive owner transition; high risk",
+          "Significant founder involvement required",
+          "Standard transition with founder consulting",
+          "Brief transition with documented playbook",
+          "Minimal transition; turnkey operation"
+        ]
+      }
+    ]
+  },
+  {
+    id: "facilities-lease",
+    title: "Facilities / Lease / Capacity",
+    description: "Review the physical footprint, lease terms, and ability to support growth.",
+    questions: [
+      {
+        id: "q1",
+        label: "What are the lease terms, renewals, and escalation structure?",
+        options: [
+          "Short-term, month-to-month, or unfavorable terms",
+          "Standard lease nearing expiry",
+          "Stable lease with multi-year term",
+          "Long-term lease with renewal options",
+          "Long-term lease with favorable terms and options to expand"
+        ]
+      },
+      {
+        id: "q2",
+        label: "Are there constraints on space, storage, or production capacity?",
+        options: [
+          "Severe constraints limiting growth",
+          "Notable constraints with workarounds in place",
+          "Adequate for current operations",
+          "Room for growth without changes",
+          "Significant excess capacity; growth-ready"
+        ]
+      },
+      {
+        id: "q3",
+        label: "What equipment is critical or nearing replacement?",
+        options: [
+          "Multiple critical pieces nearing failure",
+          "Some equipment needs replacement soon",
+          "Equipment in good shape with some aging",
+          "Capex plan documented with budget",
+          "Modern equipment with maintenance schedules"
+        ]
+      },
+      {
+        id: "q4",
+        label: "Is there any deferred maintenance?",
+        options: [
+          "Significant deferred maintenance",
+          "Some deferred items",
+          "Minor items are tracked",
+          "Maintenance is current and on schedule",
+          "Proactive maintenance program; no deferred work"
+        ]
+      },
+      {
+        id: "q5",
+        label: "Can current facilities support growth?",
+        options: [
+          "No — growth requires new facilities",
+          "Marginal growth possible",
+          "Modest growth supported",
+          "Significant growth supported",
+          "2x+ growth supported in current footprint"
+        ]
+      }
+    ]
+  },
+  {
+    id: "vendor-supply-chain",
+    title: "Vendor / Supply Chain",
+    description: "Examine vendor relationships, redundancy, and cost discipline.",
+    questions: [
+      {
+        id: "q1",
+        label: "Who are the critical vendors?",
+        options: [
+          "Vendors are not documented",
+          "Known but not formally tracked",
+          "Documented vendor list",
+          "Categorized vendor list with ratings",
+          "Strategic vendor portfolio with KPIs"
+        ]
+      },
+      {
+        id: "q2",
+        label: "Are vendor relationships owner-dependent?",
+        options: [
+          "All vendor relationships are owner-only",
+          "Most relationships are owner-dependent",
+          "Mix; some institutionalized",
+          "Mostly institutionalized",
+          "Fully institutionalized with multiple touchpoints"
+        ]
+      },
+      {
+        id: "q3",
+        label: "Are backup vendors available?",
+        options: [
+          "Single source for most categories",
+          "Limited backup vendors",
+          "Backup vendors for critical categories",
+          "Backup vendors documented with terms",
+          "Multi-source strategy across all categories"
+        ]
+      },
+      {
+        id: "q4",
+        label: "How are vendor costs monitored?",
+        options: [
+          "Not monitored",
+          "Reviewed only when issues arise",
+          "Periodic cost reviews",
+          "Regular cost benchmarking",
+          "Continuous monitoring with negotiation cadence"
+        ]
+      },
+      {
+        id: "q5",
+        label: "Have cost increases impacted operations?",
+        options: [
+          "Yes — significant unaddressed impact",
+          "Yes — operations impacted with partial response",
+          "Some impact; managed reactively",
+          "Minor impact; managed proactively",
+          "Cost increases anticipated and planned for"
+        ]
+      }
+    ]
+  },
+  {
+    id: "brand-reputation",
+    title: "Brand / Reputation",
+    description: "Understand what drives brand trust and how reputation is managed.",
+    questions: [
+      {
+        id: "q1",
+        label: "What drives brand trust (reviews, referrals, community)?",
+        options: [
+          "Unclear what drives the brand",
+          "Anecdotal sense only",
+          "Defined drivers tracked informally",
+          "Documented brand drivers with metrics",
+          "Brand strategy with continuous measurement"
+        ]
+      },
+      {
+        id: "q2",
+        label: "Where does reputation primarily come from?",
+        options: [
+          "Unknown or scattered",
+          "Founder reputation primarily",
+          "Mix of founder and brand",
+          "Brand reputation is strong",
+          "Brand-led; founder is a multiplier, not the source"
+        ]
+      },
+      {
+        id: "q3",
+        label: "Are reviews actively managed?",
+        options: [
+          "No review management",
+          "Reviews read but rarely responded to",
+          "Negative reviews are responded to",
+          "Active management on all platforms",
+          "Reputation management program with response SLAs"
+        ]
+      },
+      {
+        id: "q4",
+        label: "Are there any press, awards, or notable partnerships?",
+        options: [
+          "None",
+          "Minor mentions",
+          "Some notable coverage",
+          "Regular press or partnerships",
+          "Strong PR profile with tier-1 mentions and partnerships"
+        ]
+      },
+      {
+        id: "q5",
+        label: "Are there any known reputation risks?",
+        options: [
+          "Significant unaddressed risks",
+          "Known risks but not actively managed",
+          "Risks identified with basic mitigation",
+          "Risks managed with documented plans",
+          "Proactive reputation risk framework"
+        ]
+      }
+    ]
+  },
+  {
+    id: "ip-curriculum",
+    title: "Intellectual Property / Curriculum",
+    description: "Confirm ownership and scalability of recipes, classes, and signature experiences.",
+    questions: [
+      {
+        id: "q1",
+        label: "Who owns recipes, class content, and materials?",
+        options: [
+          "Ownership is unclear or instructor-owned",
+          "Mixed ownership with some risk",
+          "Mostly company-owned with some gaps",
+          "Company owns all content with assignments",
+          "Full IP register with all assignments documented"
+        ]
+      },
+      {
+        id: "q2",
+        label: "Are classes documented for consistent delivery?",
+        options: [
+          "Each instructor delivers their own way",
+          "Some documentation with significant variation",
+          "Documented outlines with consistent delivery",
+          "Full curriculum with quality controls",
+          "Comprehensive curriculum with QA and regular updates"
+        ]
+      },
+      {
+        id: "q3",
+        label: "Are signature experiences repeatable?",
+        options: [
+          "Highly improvised each time",
+          "Some standardization",
+          "Repeatable with key staff only",
+          "Repeatable across team with training",
+          "Productized; repeatable by any trained staff"
+        ]
+      },
+      {
+        id: "q4",
+        label: "Is there reliance on third-party or instructor-owned content?",
+        options: [
+          "Heavy reliance on third-party content",
+          "Significant third-party content",
+          "Some third-party content with rights documented",
+          "Mostly proprietary content",
+          "Fully proprietary with licensed third-party where used"
+        ]
+      },
+      {
+        id: "q5",
+        label: "Can content be scaled, licensed, or repurposed?",
+        options: [
+          "Not in current form",
+          "Possible with significant work",
+          "Some content is scalable",
+          "Most content can be scaled or repurposed",
+          "Content explicitly designed for scale and licensing"
+        ]
+      }
+    ]
+  },
+  {
+    id: "compliance-food-safety",
+    title: "Compliance / Food Safety",
+    description: "Assess food safety, licensing, and the management of dietary risk.",
+    questions: [
+      {
+        id: "q1",
+        label: "Are food safety procedures documented and followed?",
+        options: [
+          "Informal practices only",
+          "Some documentation with inconsistent application",
+          "Documented procedures and followed",
+          "Full SOPs with training program",
+          "HACCP-level program with regular audits"
+        ]
+      },
+      {
+        id: "q2",
+        label: "Are all licenses and permits current?",
+        options: [
+          "Some are lapsed or unclear",
+          "Most current with tracking gaps",
+          "All current with manual tracking",
+          "All current with renewal calendar",
+          "Compliance management system with auto-renewals"
+        ]
+      },
+      {
+        id: "q3",
+        label: "How are allergies and dietary risks managed?",
+        options: [
+          "Handled case-by-case with no system",
+          "Verbal communication with some risk",
+          "Standard process for common allergies",
+          "Documented protocol with training",
+          "Comprehensive program with documentation, training, and audits"
+        ]
+      },
+      {
+        id: "q4",
+        label: "Have there been any past health or safety issues?",
+        options: [
+          "Past issues with ongoing risk",
+          "Past issues partially addressed",
+          "Minor past issues, all resolved",
+          "Clean record",
+          "Clean record with proactive program"
+        ]
+      },
+      {
+        id: "q5",
+        label: "Who oversees compliance?",
+        options: [
+          "Nobody, or unclear",
+          "Owner part-time",
+          "Designated person, part-time",
+          "Dedicated compliance lead",
+          "Compliance officer with formal program"
+        ]
+      }
+    ]
+  },
+  {
+    id: "scheduling-utilization",
+    title: "Scheduling / Utilization",
+    description: "Evaluate how the calendar, staffing, and capacity are managed across services.",
+    questions: [
+      {
+        id: "q1",
+        label: "How is the calendar managed across all services?",
+        options: [
+          "Multiple calendars not coordinated",
+          "Single calendar with manual coordination",
+          "Centralized calendar with some integration",
+          "Integrated scheduling system",
+          "Full scheduling system with optimization"
+        ]
+      },
+      {
+        id: "q2",
+        label: "What are the peak vs. underutilized time periods?",
+        options: [
+          "Not analyzed",
+          "Anecdotal awareness",
+          "Tracked at a high level",
+          "Detailed utilization data",
+          "Optimization strategies for underutilized periods"
+        ]
+      },
+      {
+        id: "q3",
+        label: "Is there unused capacity?",
+        options: [
+          "Significant unused capacity not addressed",
+          "Some unused capacity",
+          "Capacity managed reactively",
+          "Capacity utilization optimized",
+          "Dynamic capacity management with revenue optimization"
+        ]
+      },
+      {
+        id: "q4",
+        label: "How far in advance is staffing scheduled?",
+        options: [
+          "Day-of or last-minute",
+          "Less than a week",
+          "1–2 weeks in advance",
+          "30 days in advance",
+          "60+ days with full visibility"
+        ]
+      },
+      {
+        id: "q5",
+        label: "What drives cancellations or underfilled events?",
+        options: [
+          "Drivers are unknown or unaddressed",
+          "Anecdotal patterns only",
+          "Tracked with some root cause analysis",
+          "Drivers identified with mitigation",
+          "Drivers fully understood with preventive measures in place"
+        ]
+      }
+    ]
+  },
+  {
+    id: "growth-readiness",
+    title: "Growth Readiness",
+    description: "Assess the foundations and constraints for scaling the business.",
+    questions: [
+      {
+        id: "q1",
+        label: "What parts of the business scale most easily?",
+        options: [
+          "Unclear",
+          "Some hypotheses",
+          "Identified scalable elements",
+          "Tested and validated scalable elements",
+          "Scaling playbook with proven units"
+        ]
+      },
+      {
+        id: "q2",
+        label: "What growth initiatives have been tested?",
+        options: [
+          "None",
+          "A few; results are unclear",
+          "Some tested with mixed results",
+          "Multiple tested with documented results",
+          "Disciplined testing program with playbooks"
+        ]
+      },
+      {
+        id: "q3",
+        label: "What has not worked, and why?",
+        options: [
+          "Failures are not analyzed",
+          "Anecdotal lessons only",
+          "Documented failures",
+          "Post-mortems on failed initiatives",
+          "Institutional learning with shared playbooks"
+        ]
+      },
+      {
+        id: "q4",
+        label: "What infrastructure is needed for growth?",
+        options: [
+          "Unknown",
+          "Hypothesized but not planned",
+          "Identified with rough plan",
+          "Detailed infrastructure roadmap",
+          "Funded roadmap with execution plan"
+        ]
+      },
+      {
+        id: "q5",
+        label: "What are the biggest constraints to scaling?",
+        options: [
+          "Constraints are unidentified",
+          "Known but not addressed",
+          "Constraints identified with partial plans",
+          "Constraints documented with resolution plans",
+          "Proactive constraint management; growth-ready"
+        ]
+      }
+    ]
+  }
+];
+
+const TOTAL_Q = SECTIONS.reduce((sum, s) => sum + s.questions.length, 0);
+const STORAGE_KEY = "pando-culinary-assessment-v1";
+
+// ===========================================================================
+// STATE
+// ===========================================================================
+let state = {
+  answers: {},   // key: "sectionId.qId" -> score (1-5)
+  notes: {},     // key: "sectionId.qId" -> string
+  currentSection: 0,
+  view: "section" // "section" | "summary"
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state = { ...state, ...parsed };
+    }
+  } catch (e) {
+    console.warn("Failed to load state:", e);
+  }
+}
+
+function persistState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.warn("Failed to persist state:", e);
+  }
+}
+
+// ===========================================================================
+// SCORING — IMMUTABLE THRESHOLDS
+// ===========================================================================
+function scoreColor(avg) {
+  if (avg >= 4.5) return "#22c55e";
+  if (avg >= 3.5) return "#84cc16";
+  if (avg >= 2.5) return "#f59e0b";
+  if (avg >= 1.5) return "#f97316";
+  return "#ef4444";
+}
+
+function scoreBgClass(avg) {
+  if (avg >= 4.5) return "bg-s5";
+  if (avg >= 3.5) return "bg-s4";
+  if (avg >= 2.5) return "bg-s3";
+  if (avg >= 1.5) return "bg-s2";
+  return "bg-s1";
+}
+
+function scoreColorClass(avg) {
+  if (avg >= 4.5) return "Investor-Grade";
+  if (avg >= 3.5) return "Strong";
+  if (avg >= 2.5) return "Functional";
+  if (avg >= 1.5) return "Early";
+  return "Not Ready";
+}
+
+function sectionAverage(sectionIdx) {
+  const sec = SECTIONS[sectionIdx];
+  const scores = sec.questions
+    .map(q => state.answers[`${sec.id}.${q.id}`])
+    .filter(s => typeof s === "number");
+  if (scores.length === 0) return null;
+  return scores.reduce((a, b) => a + b, 0) / scores.length;
+}
+
+function sectionAnsweredCount(sectionIdx) {
+  const sec = SECTIONS[sectionIdx];
+  return sec.questions.filter(q => typeof state.answers[`${sec.id}.${q.id}`] === "number").length;
+}
+
+function overallAverage() {
+  const allScores = [];
+  SECTIONS.forEach(sec => {
+    sec.questions.forEach(q => {
+      const s = state.answers[`${sec.id}.${q.id}`];
+      if (typeof s === "number") allScores.push(s);
+    });
+  });
+  if (allScores.length === 0) return null;
+  return allScores.reduce((a, b) => a + b, 0) / allScores.length;
+}
+
+function totalAnswered() {
+  return Object.values(state.answers).filter(v => typeof v === "number").length;
+}
+
+// ===========================================================================
+// RENDERING
+// ===========================================================================
+function renderSidebar() {
+  const wrap = document.getElementById("sectionLinks");
+  wrap.innerHTML = SECTIONS.map((sec, idx) => {
+    const ans = sectionAnsweredCount(idx);
+    const total = sec.questions.length;
+    const isActive = state.view === "section" && idx === state.currentSection;
+    let statusClass = "";
+    if (ans === total) statusClass = "complete";
+    else if (ans > 0) statusClass = "partial";
+    return `
+      <button class="section-link ${isActive ? 'active' : ''}" onclick="goToSection(${idx})">
+        <span class="section-link-num">${String(idx + 1).padStart(2, '0')}</span>
+        <span class="section-link-title">${sec.title}</span>
+        <span class="section-link-status ${statusClass}"></span>
+      </button>
+    `;
+  }).join("");
+
+  document.getElementById("summaryLink").classList.toggle("active", state.view === "summary");
+}
+
+function renderHeader() {
+  const ans = totalAnswered();
+  const pct = (ans / TOTAL_Q) * 100;
+  document.getElementById("progressFill").style.width = `${pct}%`;
+  document.getElementById("progressText").textContent = `${ans} of ${TOTAL_Q} answered`;
+
+  const overall = overallAverage();
+  const circle = document.getElementById("overallCircle");
+  const rating = document.getElementById("overallRating");
+
+  if (overall === null) {
+    circle.style.background = "var(--text-muted)";
+    circle.textContent = "—";
+    rating.textContent = "Not started";
+  } else {
+    circle.style.background = scoreColor(overall);
+    circle.textContent = overall.toFixed(1);
+    rating.textContent = scoreColorClass(overall);
+  }
+}
+
+function renderSection() {
+  const view = document.getElementById("sectionView");
+  const sec = SECTIONS[state.currentSection];
+  const ans = sectionAnsweredCount(state.currentSection);
+  const total = sec.questions.length;
+  const avg = sectionAverage(state.currentSection);
+
+  view.innerHTML = `
+    <div class="section-eyebrow">Section ${String(state.currentSection + 1).padStart(2, '0')} of ${SECTIONS.length}</div>
+    <h1 class="section-title">${sec.title}</h1>
+    <p class="section-desc">${sec.description}</p>
+
+    <div class="section-meta">
+      <div class="meta-item">
+        <div class="meta-label">Progress</div>
+        <div class="meta-value">${ans} / ${total} answered</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Section Score</div>
+        <div class="meta-value">${avg !== null ? avg.toFixed(2) + ' / 5.00' : '—'}</div>
+      </div>
+      ${avg !== null ? `
+        <div class="section-score-mini">
+          <div class="mini-score-num ${scoreBgClass(avg)}">${avg.toFixed(1)}</div>
+          <div class="meta-item">
+            <div class="meta-label">Rating</div>
+            <div class="meta-value">${scoreColorClass(avg)}</div>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+
+    ${sec.questions.map((q, qIdx) => {
+      const key = `${sec.id}.${q.id}`;
+      const selected = state.answers[key];
+      const note = state.notes[key] || "";
+      return `
+        <div class="q-card ${typeof selected === 'number' ? 'answered' : ''}">
+          <div class="q-header">
+            <div class="q-num">${qIdx + 1}</div>
+            <div class="q-label">${q.label}</div>
+          </div>
+          <div class="options">
+            ${q.options.map((opt, oIdx) => {
+              const score = oIdx + 1;
+              const isSel = selected === score;
+              return `
+                <button class="option ${isSel ? 'selected' : ''}" onclick="selectOption('${key}', ${score})">
+                  <div class="opt-radio"></div>
+                  <div class="opt-content">
+                    <div class="opt-score s${score}">Score ${score}</div>
+                    <div class="opt-text">${opt}</div>
+                  </div>
+                </button>
+              `;
+            }).join("")}
+          </div>
+          <div class="q-notes">
+            <label class="q-notes-label">Notes (optional)</label>
+            <textarea class="q-notes-input" placeholder="Add context, evidence, or follow-ups..." onchange="saveNote('${key}', this.value)">${escapeHtml(note)}</textarea>
+          </div>
+        </div>
+      `;
+    }).join("")}
+
+    <div class="section-nav">
+      <button class="nav-btn" onclick="prevSection()" ${state.currentSection === 0 ? 'disabled' : ''}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Previous Section
+      </button>
+      <button class="nav-btn next" onclick="nextSection()">
+        ${state.currentSection === SECTIONS.length - 1 ? 'View Summary' : 'Next Section'}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  `;
+}
+
+function renderSummary() {
+  const view = document.getElementById("summaryView");
+  const overall = overallAverage();
+  const ans = totalAnswered();
+
+  // Build score cards
+  const cards = SECTIONS.map((sec, idx) => {
+    const avg = sectionAverage(idx);
+    const ansN = sectionAnsweredCount(idx);
+    const total = sec.questions.length;
+    const isUnscored = avg === null;
+    const pct = avg !== null ? (avg / 5) * 100 : 0;
+    const color = avg !== null ? scoreColor(avg) : "#94a3b8";
+    return `
+      <button class="score-card ${isUnscored ? 'unscored' : ''}" onclick="goToSection(${idx})">
+        <div class="score-card-info">
+          <div class="score-card-num">Section ${String(idx + 1).padStart(2, '0')} · ${ansN}/${total}</div>
+          <div class="score-card-title">${sec.title}</div>
+          <div class="score-card-bar"><div class="score-card-fill" style="width:${pct}%; background:${color}"></div></div>
+        </div>
+        <div class="score-card-score">
+          <div class="score-card-num-big">${avg !== null ? avg.toFixed(1) : '—'}</div>
+          <div class="score-card-rating ${avg !== null ? scoreBgClass(avg) : ''}" style="${avg === null ? 'background:#94a3b8' : ''}">${avg !== null ? scoreColorClass(avg) : 'Unscored'}</div>
+        </div>
+      </button>
+    `;
+  }).join("");
+
+  // Highlights
+  const scored = SECTIONS.map((s, i) => ({
+    title: s.title,
+    avg: sectionAverage(i),
+    idx: i
+  })).filter(x => x.avg !== null);
+
+  const strengths = [...scored].sort((a, b) => b.avg - a.avg).slice(0, 3);
+  const gaps = [...scored].sort((a, b) => a.avg - b.avg).slice(0, 3);
+
+  const renderHighlight = (items) => {
+    if (items.length === 0) return `<div class="highlight-empty">Complete more sections to see highlights.</div>`;
+    return items.map(item => `
+      <div class="highlight-item">
+        <div class="highlight-item-name">${item.title}</div>
+        <div class="highlight-item-score" style="background:${scoreColor(item.avg)}">${item.avg.toFixed(1)}</div>
+      </div>
+    `).join("");
+  };
+
+  view.innerHTML = `
+    <div class="summary-hero">
+      <div>
+        <div class="hero-eyebrow">Operational Readiness</div>
+        <div class="hero-title">Culinary Business Assessment</div>
+        <div class="hero-sub">A structured view of operational, commercial, and governance readiness across 17 sections — designed to surface strengths, gaps, and the path to investor-grade operations.</div>
+      </div>
+      <div class="hero-score">
+        <div class="hero-score-num">${overall !== null ? overall.toFixed(1) : '—'}</div>
+        <div class="hero-score-rating" style="background:${overall !== null ? scoreColor(overall) : '#94a3b8'}">${overall !== null ? scoreColorClass(overall) : 'Not started'}</div>
+        <div style="font-size:11px; opacity:0.7; margin-top:4px;">${ans} of ${TOTAL_Q} answered</div>
+      </div>
+    </div>
+
+    <div class="highlights-grid">
+      <div class="highlight-card">
+        <div class="highlight-header">
+          <div class="highlight-icon strengths">↑</div>
+          <div class="highlight-title">Top Strengths</div>
+        </div>
+        <div class="highlight-list">${renderHighlight(strengths)}</div>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-header">
+          <div class="highlight-icon gaps">↓</div>
+          <div class="highlight-title">Priority Gaps</div>
+        </div>
+        <div class="highlight-list">${renderHighlight(gaps)}</div>
+      </div>
+    </div>
+
+    <div class="section-eyebrow" style="margin-top:8px;">Section Scores</div>
+    <h2 style="font-family:'Gilroy-Bold',sans-serif; font-size:22px; font-weight:800; margin-bottom:18px; letter-spacing:-0.3px;">All Sections</h2>
+    <div class="summary-grid">${cards}</div>
+  `;
+}
+
+function render() {
+  renderHeader();
+  renderSidebar();
+  if (state.view === "section") {
+    document.getElementById("sectionView").classList.remove("hidden");
+    document.getElementById("summaryView").classList.add("hidden");
+    renderSection();
+  } else {
+    document.getElementById("sectionView").classList.add("hidden");
+    document.getElementById("summaryView").classList.remove("hidden");
+    renderSummary();
+  }
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ===========================================================================
+// ACTIONS
+// ===========================================================================
+function selectOption(key, score) {
+  state.answers[key] = score;
+  persistState();
+  render();
+}
+
+function saveNote(key, value) {
+  if (value && value.trim()) {
+    state.notes[key] = value.trim();
+  } else {
+    delete state.notes[key];
+  }
+  persistState();
+}
+
+function goToSection(idx) {
+  state.currentSection = idx;
+  state.view = "section";
+  persistState();
+  render();
+}
+
+function goToSummary() {
+  state.view = "summary";
+  persistState();
+  render();
+}
+
+function nextSection() {
+  if (state.currentSection < SECTIONS.length - 1) {
+    state.currentSection++;
+    persistState();
+    render();
+  } else {
+    goToSummary();
+  }
+}
+
+function prevSection() {
+  if (state.currentSection > 0) {
+    state.currentSection--;
+    persistState();
+    render();
+  }
+}
+
+function resetAssessment() {
+  if (!confirm("Reset all answers and notes? This cannot be undone.")) return;
+  state = {
+    answers: {},
+    notes: {},
+    currentSection: 0,
+    view: "section"
+  };
+  persistState();
+  render();
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// ===========================================================================
+// PDF MODAL
+// ===========================================================================
+function openPdfModal() {
+  const ans = totalAnswered();
+  const warn = document.getElementById("pdfWarn");
+  if (ans < TOTAL_Q) {
+    warn.classList.remove("hidden");
+  } else {
+    warn.classList.add("hidden");
+  }
+  document.getElementById("pdfModal").classList.add("open");
+}
+
+function closePdfModal() {
+  document.getElementById("pdfModal").classList.remove("open");
+}
+
+document.getElementById("pdfModal").addEventListener("click", (e) => {
+  if (e.target.id === "pdfModal") closePdfModal();
+});
+
+// ===========================================================================
+// PDF GENERATION
+// ===========================================================================
+function pdfSafe(text) {
+  if (text == null) return "";
+  return String(text)
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+    .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/[\u2026]/g, "...")
+    .replace(/[\u2192\u27A1\u279C]/g, "->")
+    .replace(/[\u2190]/g, "<-")
+    .replace(/[\u2191]/g, "^")
+    .replace(/[\u2193]/g, "v")
+    .replace(/[\u00A0]/g, " ")
+    .replace(/[\u2022\u25CF]/g, "*")
+    .replace(/[^\x00-\x7F]/g, ""); // strip remaining non-ASCII
+}
+
+function hexToRgb(hex) {
+  const h = hex.replace("#", "");
+  return [
+    parseInt(h.substring(0, 2), 16),
+    parseInt(h.substring(2, 4), 16),
+    parseInt(h.substring(4, 6), 16)
+  ];
+}
+
+function generatePDF() {
+  if (typeof window.jspdf === "undefined" || typeof window.jspdf.jsPDF === "undefined") {
+    alert("PDF library failed to load. Please check your internet connection and reload the page.");
+    return;
+  }
+
+  closePdfModal();
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+  const PW = 210;
+  const PH = 297;
+  const MARGIN = 16;
+  const CW = PW - MARGIN * 2;
+
+  // Column constants for section detail tables
+  const COL = {
+    numX: MARGIN + 4,
+    titleX: MARGIN + 14,
+    barX: MARGIN + 100,
+    scoreX: MARGIN + 150,
+    ratingX: MARGIN + 168,
+    rowEnd: PW - MARGIN - 4
+  };
+
+  const BRAND = hexToRgb("#0f4c4c");
+  const ACCENT = hexToRgb("#14b8a6");
+  const TEXT_PRIMARY = hexToRgb("#0f172a");
+  const TEXT_SECONDARY = hexToRgb("#475569");
+  const TEXT_MUTED = hexToRgb("#94a3b8");
+  const BORDER = hexToRgb("#e2e8f0");
+  const BG_SUBTLE = hexToRgb("#f1f5f9");
+
+  const today = new Date().toLocaleDateString("en-US", {
+    year: "numeric", month: "long", day: "numeric"
+  });
+
+  // ============================================================
+  // PAGE 1 — COVER
+  // ============================================================
+  doc.setFillColor(...BRAND);
+  doc.rect(0, 0, PW, 110, "F");
+
+  doc.setFillColor(...ACCENT);
+  doc.rect(0, 110, PW, 2, "F");
+
+  // Brand mark
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(MARGIN, 24, 16, 16, 2, 2, "F");
+  doc.setTextColor(...BRAND);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("P", MARGIN + 8, 35, { align: "center" });
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.text(pdfSafe("PANDO CONSULTING GROUP"), MARGIN + 22, 32);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.text(pdfSafe("OPERATIONAL READINESS"), MARGIN + 22, 37);
+
+  // Title
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(28);
+  doc.setTextColor(255, 255, 255);
+  doc.text(pdfSafe("Culinary Business"), MARGIN, 70);
+  doc.text(pdfSafe("Assessment Report"), MARGIN, 82);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.setTextColor(204, 251, 241);
+  doc.text(pdfSafe("Prepared " + today), MARGIN, 95);
+
+  // Score block
+  const overall = overallAverage();
+  const totalAns = totalAnswered();
+
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(MARGIN, 130, CW, 70, 3, 3, "F");
+  doc.setDrawColor(...BORDER);
+  doc.roundedRect(MARGIN, 130, CW, 70, 3, 3, "S");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(...TEXT_MUTED);
+  doc.text(pdfSafe("OVERALL READINESS SCORE"), MARGIN + 8, 142);
+
+  if (overall !== null) {
+    const scoreColor_rgb = hexToRgb(scoreColor(overall));
+    doc.setFontSize(48);
+    doc.setTextColor(...TEXT_PRIMARY);
+    doc.setFont("helvetica", "bold");
+    const scoreStr = overall.toFixed(1);
+    doc.text(pdfSafe(scoreStr), MARGIN + 8, 168);
+    const scoreW = doc.getTextWidth(pdfSafe(scoreStr));
+
+    doc.setFontSize(14);
+    doc.setTextColor(...TEXT_MUTED);
+    doc.text(pdfSafe("/ 5.00"), MARGIN + 8 + scoreW + 3, 167);
+
+    // Rating pill
+    doc.setFillColor(...scoreColor_rgb);
+    const rating = scoreColorClass(overall);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    const ratingW = doc.getTextWidth(pdfSafe(rating.toUpperCase())) + 8;
+    doc.roundedRect(MARGIN + 8, 175, ratingW, 7, 1.5, 1.5, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.text(pdfSafe(rating.toUpperCase()), MARGIN + 8 + ratingW / 2, 180, { align: "center" });
+  } else {
+    doc.setFontSize(36);
+    doc.setTextColor(...TEXT_MUTED);
+    doc.setFont("helvetica", "bold");
+    doc.text(pdfSafe("--"), MARGIN + 8, 168);
+  }
+
+  // Stats on the right
+  const statsX = MARGIN + CW - 70;
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...TEXT_MUTED);
+  doc.text(pdfSafe("QUESTIONS ANSWERED"), statsX, 142);
+  doc.setFontSize(20);
+  doc.setTextColor(...TEXT_PRIMARY);
+  doc.text(pdfSafe(`${totalAns} / ${TOTAL_Q}`), statsX, 152);
+
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...TEXT_MUTED);
+  doc.text(pdfSafe("SECTIONS COVERED"), statsX, 168);
+  doc.setFontSize(20);
+  doc.setTextColor(...TEXT_PRIMARY);
+  const scoredCount = SECTIONS.filter((_, i) => sectionAverage(i) !== null).length;
+  doc.text(pdfSafe(`${scoredCount} / ${SECTIONS.length}`), statsX, 178);
+
+  // Description
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.setTextColor(...TEXT_SECONDARY);
+  const desc = pdfSafe("This report provides a structured view of operational, commercial, and governance readiness across the business — surfacing strengths, gaps, and the operational improvements required to reach institutional standards.");
+  const descLines = doc.splitTextToSize(desc, CW);
+  doc.text(descLines, MARGIN, 215);
+
+  // Scoring legend
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(...TEXT_MUTED);
+  doc.text(pdfSafe("SCORING SCALE"), MARGIN, 245);
+
+  const legend = [
+    { label: "Investor-Grade", range: "4.5 - 5.0", color: "#22c55e" },
+    { label: "Strong", range: "3.5 - 4.4", color: "#84cc16" },
+    { label: "Functional", range: "2.5 - 3.4", color: "#f59e0b" },
+    { label: "Early", range: "1.5 - 2.4", color: "#f97316" },
+    { label: "Not Ready", range: "1.0 - 1.4", color: "#ef4444" }
+  ];
+
+  let lx = MARGIN;
+  const legW = (CW) / 5;
+  legend.forEach((item, i) => {
+    const c = hexToRgb(item.color);
+    doc.setFillColor(...c);
+    doc.roundedRect(lx, 250, 4, 4, 1, 1, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(...TEXT_PRIMARY);
+    doc.text(pdfSafe(item.label), lx + 6, 253);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(...TEXT_MUTED);
+    doc.text(pdfSafe(item.range), lx + 6, 257);
+    lx += legW;
+  });
+
+  // Footer
+  doc.setDrawColor(...BORDER);
+  doc.line(MARGIN, 280, PW - MARGIN, 280);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(...TEXT_MUTED);
+  doc.text(pdfSafe("Pando Consulting Group | Confidential"), MARGIN, 287);
+  doc.text(pdfSafe("Page 1"), PW - MARGIN, 287, { align: "right" });
+
+  // ============================================================
+  // PAGE 2 — HIGHLIGHTS / SECTION SCORES
+  // ============================================================
+  doc.addPage();
+
+  // Header band
+  doc.setFillColor(...BRAND);
+  doc.rect(0, 0, PW, 30, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(204, 251, 241);
+  doc.text(pdfSafe("OPERATIONAL READINESS REPORT"), MARGIN, 12);
+  doc.setFontSize(16);
+  doc.setTextColor(255, 255, 255);
+  doc.text(pdfSafe("Section Scores & Highlights"), MARGIN, 22);
+
+  let cursorY = 45;
+
+  // Highlights row
+  const scored = SECTIONS.map((s, i) => ({
+    title: s.title,
+    avg: sectionAverage(i),
+    idx: i
+  })).filter(x => x.avg !== null);
+  const strengths = [...scored].sort((a, b) => b.avg - a.avg).slice(0, 3);
+  const gaps = [...scored].sort((a, b) => a.avg - b.avg).slice(0, 3);
+
+  const colW = (CW - 6) / 2;
+
+  // Strengths card
+  doc.setFillColor(...BG_SUBTLE);
+  doc.roundedRect(MARGIN, cursorY, colW, 50, 2, 2, "F");
+  doc.setFillColor(34, 197, 94);
+  doc.roundedRect(MARGIN + 4, cursorY + 4, 6, 6, 1, 1, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(...TEXT_PRIMARY);
+  doc.text(pdfSafe("TOP STRENGTHS"), MARGIN + 13, cursorY + 8.5);
+
+  let sy = cursorY + 17;
+  if (strengths.length === 0) {
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(9);
+    doc.setTextColor(...TEXT_MUTED);
+    doc.text(pdfSafe("Complete more sections to see highlights."), MARGIN + 4, sy);
+  } else {
+    strengths.forEach(item => {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(...TEXT_PRIMARY);
+      const lines = doc.splitTextToSize(pdfSafe(item.title), colW - 24);
+      doc.text(lines[0], MARGIN + 4, sy);
+      const c = hexToRgb(scoreColor(item.avg));
+      doc.setFillColor(...c);
+      doc.roundedRect(MARGIN + colW - 18, sy - 4, 14, 6, 1, 1, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text(pdfSafe(item.avg.toFixed(1)), MARGIN + colW - 11, sy, { align: "center" });
+      sy += 9;
+    });
+  }
+
+  // Gaps card
+  const gx = MARGIN + colW + 6;
+  doc.setFillColor(...BG_SUBTLE);
+  doc.roundedRect(gx, cursorY, colW, 50, 2, 2, "F");
+  doc.setFillColor(239, 68, 68);
+  doc.roundedRect(gx + 4, cursorY + 4, 6, 6, 1, 1, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(...TEXT_PRIMARY);
+  doc.text(pdfSafe("PRIORITY GAPS"), gx + 13, cursorY + 8.5);
+
+  let gy = cursorY + 17;
+  if (gaps.length === 0) {
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(9);
+    doc.setTextColor(...TEXT_MUTED);
+    doc.text(pdfSafe("Complete more sections to see highlights."), gx + 4, gy);
+  } else {
+    gaps.forEach(item => {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(...TEXT_PRIMARY);
+      const lines = doc.splitTextToSize(pdfSafe(item.title), colW - 24);
+      doc.text(lines[0], gx + 4, gy);
+      const c = hexToRgb(scoreColor(item.avg));
+      doc.setFillColor(...c);
+      doc.roundedRect(gx + colW - 18, gy - 4, 14, 6, 1, 1, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text(pdfSafe(item.avg.toFixed(1)), gx + colW - 11, gy, { align: "center" });
+      gy += 9;
+    });
+  }
+
+  cursorY += 60;
+
+  // Section scores table heading
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.setTextColor(...TEXT_PRIMARY);
+  doc.text(pdfSafe("All Section Scores"), MARGIN, cursorY);
+  cursorY += 6;
+
+  // Table header
+  doc.setFillColor(...BG_SUBTLE);
+  doc.rect(MARGIN, cursorY, CW, 7, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7);
+  doc.setTextColor(...TEXT_MUTED);
+  doc.text(pdfSafe("#"), COL.numX, cursorY + 4.5);
+  doc.text(pdfSafe("SECTION"), COL.titleX, cursorY + 4.5);
+  doc.text(pdfSafe("PROGRESS"), COL.barX, cursorY + 4.5);
+  doc.text(pdfSafe("SCORE"), COL.scoreX, cursorY + 4.5);
+  doc.text(pdfSafe("RATING"), COL.ratingX, cursorY + 4.5);
+  cursorY += 7;
+
+  SECTIONS.forEach((sec, idx) => {
+    if (cursorY > PH - 25) {
+      doc.addPage();
+      cursorY = 20;
+    }
+    const avg = sectionAverage(idx);
+    const ans = sectionAnsweredCount(idx);
+    const total = sec.questions.length;
+    const rowH = 9;
+
+    // Row separator
+    doc.setDrawColor(...BORDER);
+    doc.line(MARGIN, cursorY + rowH, PW - MARGIN, cursorY + rowH);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(...TEXT_MUTED);
+    doc.text(pdfSafe(String(idx + 1).padStart(2, "0")), COL.numX, cursorY + 6);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(...TEXT_PRIMARY);
+    const titleStr = pdfSafe(sec.title);
+    const titleLines = doc.splitTextToSize(titleStr, COL.barX - COL.titleX - 4);
+    doc.text(titleLines[0], COL.titleX, cursorY + 6);
+
+    // Progress bar
+    const barW = 40;
+    const fillW = (ans / total) * barW;
+    doc.setFillColor(...BG_SUBTLE);
+    doc.roundedRect(COL.barX, cursorY + 3.5, barW, 3, 0.5, 0.5, "F");
+    if (fillW > 0) {
+      const barColor = avg !== null ? hexToRgb(scoreColor(avg)) : hexToRgb("#cbd5e1");
+      doc.setFillColor(...barColor);
+      doc.roundedRect(COL.barX, cursorY + 3.5, fillW, 3, 0.5, 0.5, "F");
+    }
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(...TEXT_MUTED);
+    doc.text(pdfSafe(`${ans}/${total}`), COL.barX, cursorY + 9.5);
+
+    // Score
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(...TEXT_PRIMARY);
+    doc.text(pdfSafe(avg !== null ? avg.toFixed(1) : "--"), COL.scoreX, cursorY + 6);
+
+    // Rating pill
+    if (avg !== null) {
+      const c = hexToRgb(scoreColor(avg));
+      doc.setFillColor(...c);
+      const rating = scoreColorClass(avg);
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "bold");
+      const rW = doc.getTextWidth(pdfSafe(rating.toUpperCase())) + 4;
+      doc.roundedRect(COL.ratingX, cursorY + 2.5, rW, 5, 1, 1, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.text(pdfSafe(rating.toUpperCase()), COL.ratingX + rW / 2, cursorY + 6, { align: "center" });
+    } else {
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8);
+      doc.setTextColor(...TEXT_MUTED);
+      doc.text(pdfSafe("Unscored"), COL.ratingX, cursorY + 6);
+    }
+
+    cursorY += rowH;
+  });
+
+  // Footer
+  doc.setDrawColor(...BORDER);
+  doc.line(MARGIN, PH - 12, PW - MARGIN, PH - 12);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(...TEXT_MUTED);
+  doc.text(pdfSafe("Pando Consulting Group | Confidential"), MARGIN, PH - 6);
+  doc.text(pdfSafe("Page 2"), PW - MARGIN, PH - 6, { align: "right" });
+
+  // ============================================================
+  // SECTION DETAIL PAGES
+  // ============================================================
+  let pageNum = 2;
+  SECTIONS.forEach((sec, idx) => {
+    const avg = sectionAverage(idx);
+    if (avg === null) return; // skip unscored sections
+
+    doc.addPage();
+    pageNum++;
+
+    // Header
+    doc.setFillColor(...BRAND);
+    doc.rect(0, 0, PW, 30, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.setTextColor(204, 251, 241);
+    doc.text(pdfSafe(`SECTION ${String(idx + 1).padStart(2, "0")} OF ${SECTIONS.length}`), MARGIN, 11);
+    doc.setFontSize(15);
+    doc.setTextColor(255, 255, 255);
+    doc.text(pdfSafe(sec.title), MARGIN, 21);
+
+    // Score badge upper right
+    const c = hexToRgb(scoreColor(avg));
+    doc.setFillColor(...c);
+    doc.roundedRect(PW - MARGIN - 30, 8, 26, 14, 2, 2, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.setTextColor(255, 255, 255);
+    doc.text(pdfSafe(avg.toFixed(1)), PW - MARGIN - 17, 17, { align: "center" });
+
+    let y = 42;
+
+    // Section meta
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(...TEXT_SECONDARY);
+    const descLines2 = doc.splitTextToSize(pdfSafe(sec.description), CW);
+    doc.text(descLines2, MARGIN, y);
+    y += descLines2.length * 4 + 4;
+
+    // Stats
+    const ans = sectionAnsweredCount(idx);
+    const total = sec.questions.length;
+    doc.setFillColor(...BG_SUBTLE);
+    doc.roundedRect(MARGIN, y, CW, 14, 2, 2, "F");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.setTextColor(...TEXT_MUTED);
+    doc.text(pdfSafe("PROGRESS"), MARGIN + 4, y + 5);
+    doc.text(pdfSafe("SECTION SCORE"), MARGIN + 60, y + 5);
+    doc.text(pdfSafe("RATING"), MARGIN + 110, y + 5);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(...TEXT_PRIMARY);
+    doc.text(pdfSafe(`${ans} / ${total} answered`), MARGIN + 4, y + 11);
+    doc.text(pdfSafe(`${avg.toFixed(2)} / 5.00`), MARGIN + 60, y + 11);
+
+    // Rating pill
+    doc.setFillColor(...c);
+    const rating = scoreColorClass(avg);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    const rW2 = doc.getTextWidth(pdfSafe(rating.toUpperCase())) + 6;
+    doc.roundedRect(MARGIN + 110, y + 7, rW2, 6, 1, 1, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.text(pdfSafe(rating.toUpperCase()), MARGIN + 110 + rW2 / 2, y + 11, { align: "center" });
+
+    y += 22;
+
+    // Questions
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...TEXT_PRIMARY);
+    doc.text(pdfSafe("Question Detail"), MARGIN, y);
+    y += 6;
+
+    sec.questions.forEach((q, qIdx) => {
+      const key = `${sec.id}.${q.id}`;
+      const score = state.answers[key];
+      const note = state.notes[key];
+
+      // Calculate row height dynamically
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      const labelLines = doc.splitTextToSize(pdfSafe(q.label), CW - 30);
+
+      let answerLines = [];
+      if (typeof score === "number") {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        answerLines = doc.splitTextToSize(pdfSafe(q.options[score - 1]), CW - 8);
+      }
+
+      let noteLines = [];
+      if (note) {
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(8);
+        noteLines = doc.splitTextToSize(pdfSafe("Notes: " + note), CW - 8);
+      }
+
+      const rowH = 8 + labelLines.length * 4 + (answerLines.length ? answerLines.length * 4 + 4 : 4) + (noteLines.length ? noteLines.length * 4 + 3 : 0) + 4;
+
+      // Page break check
+      if (y + rowH > PH - 18) {
+        // footer
+        doc.setDrawColor(...BORDER);
+        doc.line(MARGIN, PH - 12, PW - MARGIN, PH - 12);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(...TEXT_MUTED);
+        doc.text(pdfSafe("Pando Consulting Group | Confidential"), MARGIN, PH - 6);
+        doc.text(pdfSafe(`Page ${pageNum}`), PW - MARGIN, PH - 6, { align: "right" });
+
+        doc.addPage();
+        pageNum++;
+
+        // Continued header strip (simpler)
+        doc.setFillColor(...BG_SUBTLE);
+        doc.rect(0, 0, PW, 16, "F");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(...TEXT_SECONDARY);
+        doc.text(pdfSafe(`${sec.title} (continued)`), MARGIN, 10);
+        y = 24;
+      }
+
+      // Card background
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(...BORDER);
+      doc.roundedRect(MARGIN, y, CW, rowH, 2, 2, "FD");
+
+      // Q number badge
+      doc.setFillColor(...BRAND);
+      doc.roundedRect(MARGIN + 4, y + 4, 8, 5.5, 1, 1, "F");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      doc.setTextColor(255, 255, 255);
+      doc.text(pdfSafe(`Q${qIdx + 1}`), MARGIN + 8, y + 8, { align: "center" });
+
+      // Question label
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(...TEXT_PRIMARY);
+      doc.text(labelLines, MARGIN + 16, y + 8);
+
+      let yy = y + 8 + labelLines.length * 4 + 3;
+
+      // Score badge if answered
+      if (typeof score === "number") {
+        const sc = hexToRgb(scoreColor(score));
+        doc.setFillColor(...sc);
+        doc.roundedRect(MARGIN + 4, yy - 4, 14, 5, 1, 1, "F");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(7);
+        doc.setTextColor(255, 255, 255);
+        doc.text(pdfSafe(`SCORE ${score}`), MARGIN + 11, yy - 0.5, { align: "center" });
+
+        // Answer text
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(...TEXT_PRIMARY);
+        doc.text(answerLines, MARGIN + 22, yy);
+        yy += answerLines.length * 4 + 2;
+      } else {
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(8);
+        doc.setTextColor(...TEXT_MUTED);
+        doc.text(pdfSafe("Not answered"), MARGIN + 4, yy);
+        yy += 4;
+      }
+
+      // Notes
+      if (note) {
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(8);
+        doc.setTextColor(...TEXT_SECONDARY);
+        doc.text(noteLines, MARGIN + 4, yy + 2);
+      }
+
+      y += rowH + 3;
+    });
+
+    // Footer
+    doc.setDrawColor(...BORDER);
+    doc.line(MARGIN, PH - 12, PW - MARGIN, PH - 12);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...TEXT_MUTED);
+    doc.text(pdfSafe("Pando Consulting Group | Confidential"), MARGIN, PH - 6);
+    doc.text(pdfSafe(`Page ${pageNum}`), PW - MARGIN, PH - 6, { align: "right" });
+  });
+
+  doc.save(`Pando-Culinary-Assessment-${new Date().toISOString().slice(0, 10)}.pdf`);
+}
+
+// ===========================================================================
+// INIT
+// ===========================================================================
+loadState();
+render();
+
+</script>
+</body>
+</html>
